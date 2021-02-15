@@ -2,14 +2,14 @@
 
 namespace FTX\Tests\Client;
 
-use FTX\Client\HttpClient;
+use FTX\Client\HttpClientUS;
 use FTX\Tests\FTXTestCase;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Mock\Client;
 
-class HttpClientTest extends FTXTestCase
+class HttpClientUSTest extends HttpClientTest
 {
-    protected HttpClient $http;
+    protected HttpClientUS $http;
     protected Client $client;
 
     protected function setUp(): void
@@ -18,12 +18,12 @@ class HttpClientTest extends FTXTestCase
 
         $this->client = new Client();
 
-        $this->http = new HttpClient(
+        $this->http = new HttpClientUS(
             $this->client,
             Psr17FactoryDiscovery::findRequestFactory(),
             Psr17FactoryDiscovery::findUrlFactory(),
             Psr17FactoryDiscovery::findStreamFactory(),
-            'https://ftx.com/api'
+            'https://ftx.us/api'
         );
     }
 
@@ -33,7 +33,7 @@ class HttpClientTest extends FTXTestCase
         
         $this->http->get('foo');
 
-        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTX-SUBACCOUNT'), 'foo');
+        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTXUS-SUBACCOUNT'), 'foo');
     }
 
     public function testCredentialsHeadersAreAdded()
@@ -47,8 +47,8 @@ class HttpClientTest extends FTXTestCase
         
         $signature = hash_hmac('sha256', $time.'GET/api/foo', 'bar');
 
-        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTX-KEY'), 'foo');
-        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTX-TS'), $time);
-        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTX-SIGN'), $signature);
+        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTXUS-KEY'), 'foo');
+        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTXUS-TS'), $time);
+        $this->assertEquals($this->client->getLastRequest()->getHeaderLine('FTXUS-SIGN'), $signature);
     }
 }
